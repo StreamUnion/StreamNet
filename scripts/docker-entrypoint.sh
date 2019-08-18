@@ -7,9 +7,7 @@ if $ENABLE_BATCHING;then
 fi
 if true
 then
-  hostip=$(echo $HOST_IP|awk '{print $3}')
-  echo $hostip
-  sed -i "2s/localhost/${hostip}/g" conf
+  sed -i "2s/localhost/${HOST_IP}/g" conf
 fi
 
 python app.py

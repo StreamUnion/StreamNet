@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment 
+metadata:
+  name: streamnet 
+  labels:
+    name: streamnet 
+    app: streamnet 
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: streamnet 
+  template:
+    metadata:
+      labels:
+        app: streamnet 
+    spec:
+      containers:
+       - name: streamnet 
+         image: stplaydog/streamnet:dev 
+         command: ["/entrypoint.sh"]
+         ports:
+           - containerPort: 14700 
+             name: streamnet 
+             protocol: TCP
+       - name: streamnet-cli 
+         image: stplaydog/streamnet-cli:dev
+         command: ["/docker-entrypoint.sh"]
+         env:
+           - name: "ENABLE_BATCHING"
+             value: "true"
+           - name: "HOST_IP"
+             value: "localhost"
+         ports:
+           - containerPort: 5000
+             name: streamnet-cli 
+             protocol: TCP            

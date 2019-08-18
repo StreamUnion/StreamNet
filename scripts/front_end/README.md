@@ -2,39 +2,30 @@
 
 ### mysql set up
 
-download -> install -> run mysql on you machine
+Bring mysql up
 
-loggin with root to create trias user create databases and grant privileges
-```bash  
-mysql -u root
-create user 'trias'@'%' identified by 'trias@123';
-create database trias_cli;
-create database trias;
-grant all privileges on trias.* to trias@'%';
-grant all privileges on trias_cli.* to trias@'%';
+```bash
+docker-compose up
 ```
 
-source tables into database
+Compile oauth services (In trias-oauth/oauth-resource/ and oauth-server/).
+
 ```bash
-mvn package
-cd scripts/front_end/trias-oauth/oauth-server/src/main/resources/db/
-mysql -u trias -p trias
-source trias_server-init.sql
-source trias-server_ddl.sql
+./gradlew clean build
+```
 
+DB migration (In trias-oauth/oauth-resource/ and oauth-server/)
 
-cd scripts/front_end/trias-oauth/oauth-resource/src/main/resources/db/
-mysql -u trias -p trias_cli
-source trias_cli-init.sql 
-source trias_cli_user_ddl.sql
-
+```bash
+./gradlew flywayClean
+./gradlew flywayMigrate
 ```
 
 ### OAuth server / client set up
 
 start oauth and oauth cli
 ```bash
-$TRIAS_OAUTH_CLIENT=/opt/trias/oauth/client
+export TRIAS_OAUTH_CLIENT=/opt/trias/oauth/client
 mkdir -p $TRIAS_OAUTH_CLIENT
 cp scripts/front_end/trias-oauth/oauth-resource/target/oauth-resource-1.0-SNAPSHOT.jar $TRIAS_OAUTH_CLIENT
 cp scripts/front_end/trias-oauth/oauth-resource/src/main/resources/application.yml   $TRIAS_OAUTH_CLIENT
@@ -42,7 +33,7 @@ cp scripts/front_end/trias-oauth/oauth-resource/src/main/resources/logback-sprin
 cd $TRIAS_OAUTH_CLIENT
 java -jar oauth-resource-1.0-SNAPSHOT.jar  &
 
-$TRIAS_OAUTH_SERVER=/opt/trias/oauth/server
+export TRIAS_OAUTH_SERVER=/opt/trias/oauth/server
 mkdir -p $TRIAS_OAUTH_SERVER
 cp scripts/front_end/trias-oauth/oauth-server/target/oauth-server-1.0-SNAPSHOT.jar $TRIAS_OAUTH_SERVER
 cp scripts/front_end/trias-oauth/oauth-server/src/main/resources/application.yml  $TRIAS_OAUTH_SERVER
